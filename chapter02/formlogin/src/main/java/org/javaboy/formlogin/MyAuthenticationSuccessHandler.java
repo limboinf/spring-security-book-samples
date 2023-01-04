@@ -11,18 +11,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * 自定义AuthenticationSuccessHandler 身份验证成功处理程序
  */
 public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHandler{
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         response.setContentType("application/json;charset=utf-8");
         Map<String, Object> resp = new HashMap<>();
         resp.put("status", 200);
