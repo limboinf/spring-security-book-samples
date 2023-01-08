@@ -123,7 +123,7 @@ LOCK TABLES `user2` WRITE;
 
 INSERT INTO `user2` (`id`, `username`, `password`, `enabled`, `accountNonExpired`, `accountNonLocked`, `credentialsNonExpired`)
 VALUES
-	(1,'javaboy','{noop}123',1,1,1,1);
+	(1,'limbo','{noop}123',1,1,1,1);
 
 /*!40000 ALTER TABLE `user2` ENABLE KEYS */;
 UNLOCK TABLES;

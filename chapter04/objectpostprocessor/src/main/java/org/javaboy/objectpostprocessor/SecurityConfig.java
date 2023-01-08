@@ -8,13 +8,7 @@ import org.springframework.security.config.annotation.web.configurers.FormLoginC
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -25,13 +19,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
+                // ObjectPostProcessor 对象后置处理器
                 .withObjectPostProcessor(new ObjectPostProcessor<UsernamePasswordAuthenticationFilter>() {
                     @Override
                     public <O extends UsernamePasswordAuthenticationFilter> O postProcess(O object) {
-                        object.setUsernameParameter("name");
-                        object.setPasswordParameter("passwd");
+                        System.out.println("Object post processor ....");
+                        object.setUsernameParameter("username");
+                        object.setPasswordParameter("password");
                         object.setAuthenticationSuccessHandler((req,resp,auth)->{
-                            resp.getWriter().write("login success");
+                            System.out.println("登陆成功 ....");
+                            resp.getWriter().write("hello, login successful!!!");
                         });
                         return object;
                     }

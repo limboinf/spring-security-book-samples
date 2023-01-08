@@ -9,17 +9,20 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * kaptcha验证码身份验证提供者
+ *
  */
 public class KaptchaAuthenticationProvider extends DaoAuthenticationProvider {
 
+    /**
+     * 进行身份验证
+     *
+     * 从 RequestContextHolder 获取当前请求
+     * 进而获取到验证码参数和存储在HttpSession中的验证码文本进行比较，比较通过则继续执行父类的authenticate方法，比较不通过，就抛出异常
+     *
+     */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();

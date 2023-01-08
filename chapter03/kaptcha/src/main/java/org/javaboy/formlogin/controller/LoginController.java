@@ -32,17 +32,21 @@ public class LoginController {
     @GetMapping("/vc.jpg")
     public void getVerifyCode(HttpServletResponse resp, HttpSession session) throws IOException {
         resp.setContentType("image/jpeg");
+        // 生成验证码文本，并将文本存入HttpSession中
         String text = producer.createText();
         session.setAttribute("kaptcha", text);
+        // 根据验证码文本生成验证码图片，并通过IO流写出到前端
         BufferedImage image = producer.createImage(text);
         try(ServletOutputStream out = resp.getOutputStream()) {
             ImageIO.write(image, "jpg", out);
         }
     }
+
     @RequestMapping("/index")
     public String index() {
         return "login success";
     }
+
     @RequestMapping("/hello")
     public String hello() {
         return "hello spring security";

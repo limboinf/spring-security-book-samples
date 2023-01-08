@@ -50,10 +50,10 @@ CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(32) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `enabled` tinyint(1) DEFAULT NULL,
-  `accountNonExpired` tinyint(1) DEFAULT NULL,
-  `accountNonLocked` tinyint(1) DEFAULT NULL,
-  `credentialsNonExpired` tinyint(1) DEFAULT NULL,
+  `enabled` tinyint(1) DEFAULT NULL COMMENT '账户是否可用',
+  `accountNonExpired` tinyint(1) DEFAULT NULL COMMENT '账户是否没有过期',
+  `accountNonLocked` tinyint(1) DEFAULT NULL COMMENT '账户是否没有锁定',
+  `credentialsNonExpired` tinyint(1) DEFAULT NULL COMMENT '凭证（密码）是否没有过期',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

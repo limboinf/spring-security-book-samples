@@ -13,13 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * 配置多数据源
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -35,15 +29,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new InMemoryUserDetailsManager(User.builder().username("sang").password("{noop}123").roles("user").build());
     }
 
+    /**
+     * 身份验证管理器
+     * <p>
+     * AuthenticationManager 认证管理器，只有一个 authenticate 方法
+     * 该方法传入Authentication参数只有用户名／密码等简单的属性，如果认证成功，返回的Authentication的属性会得到完全填充，包括用户所具备的角色信息。
+     * ProviderManager是其最常用的实现类
+     *
+     * @return {@link AuthenticationManager}
+     */
     @Override
     @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
+    public AuthenticationManager authenticationManagerBean() {
+        // AuthenticationProvider 针对不同的身份类型执行具体的身份认证
+        // 其实现类常见的：DaoAuthenticationProvide(支持用户名密码）,RememberMeAuthenticationProvider(支持'记住我'的认证)
         DaoAuthenticationProvider dao1 = new DaoAuthenticationProvider();
         dao1.setUserDetailsService(us1());
 
         DaoAuthenticationProvider dao2 = new DaoAuthenticationProvider();
         dao2.setUserDetailsService(us2());
 
+        // ProviderManager 用于管理多个认证方式(AuthenticationProvider)
         ProviderManager manager = new ProviderManager(dao1, dao2);
         return manager;
     }
