@@ -38,6 +38,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    /**
+     * 登录过滤器
+     *
+     * example:
+        {
+            "authorities": [{ "authority": "ROLE_admin" } ],
+            "details": {
+                "remoteAddress": "0:0:0:0:0:0:0:1",
+                "sessionId": "90D627C45B47FC19AE96AD2883D8F4EA"
+            },
+            "authenticated": true,
+            "principal": {
+                "password": null,
+                "username": "javagirl",
+                "authorities": [ { "authority": "ROLE_admin" } ],
+                "accountNonExpired": true,
+                "accountNonLocked": true,
+                "credentialsNonExpired": true,
+                "enabled": true
+            },
+            "credentials": null,
+            "name": "javagirl"
+        }
+     */
     @Bean
     LoginFilter loginFilter() throws Exception {
         LoginFilter loginFilter = new LoginFilter();
