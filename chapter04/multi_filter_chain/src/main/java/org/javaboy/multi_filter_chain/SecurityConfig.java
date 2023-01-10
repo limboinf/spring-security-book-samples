@@ -12,22 +12,27 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * 定义多个过滤器链
+ * <p>
+ * 一个WebSecurityConfigurerAdapter实例就可以配置一条过滤器链
+ * <br>
+ * @Order标记不同配置的优先级，数字越大优先级越低。当请求到来时，会按照过滤器链的优先级从高往低，依次进行匹配
  */
 @Configuration
 public class SecurityConfig {
+
     @Bean
     UserDetailsService us() {
         InMemoryUserDetailsManager users = new InMemoryUserDetailsManager();
         users.createUser(User.withUsername("javaboy").password("{noop}123").roles("admin").build());
         return users;
     }
+
+    /**
+     * 过滤链1
+     *
+     * curl -X POST http://localhost:8080/bar/login -H "Content-Type: application/x-www-form-urlencoded" -d 'username=javaboy&password=123'
+     */
     @Configuration
     @Order(1)
     static class SecurityConfig01 extends WebSecurityConfigurerAdapter {

@@ -6,13 +6,10 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * 静态资源过滤
+ * <p>
+ *     WebSecurity 里维护一个 ignoredRequests变量记录所有需要被忽略的请求
+ *     这些请求不经过Spring Security过滤器
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
