@@ -10,18 +10,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * UserService实现了UserDetailsPasswordService该接口中的updatePassword方法。
+ * 当系统判断密码加密方案需要升级的时候，就会自动调用updatePassword方法去修改数据库中的密码。
  */
 @Configuration
 public class UserService implements UserDetailsService, UserDetailsPasswordService {
     @Autowired
     UserMapper userMapper;
+
     @Override
     public UserDetails updatePassword(UserDetails user, String newPassword) {
         Integer result = userMapper.updatePassword(user.getUsername(), newPassword);
