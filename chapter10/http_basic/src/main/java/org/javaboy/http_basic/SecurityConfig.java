@@ -6,13 +6,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * HTTP Basic authentication && HTTP Digest authentication
+ * <br>
+ * 这种认证方式通过HTTP请求头来提供认证信息，而不是通过表单登录
+ *
+ * 请求后Response WWW-Authenticate: Basic realm="Realm"  --> 登陆成功 --> Authorization: Basic amF2YWJveToxMjM=
+ *
+ * 认证方式有Basic、Bearer（OAuth2.0认证）、Digest（HTTP摘要认证）等取值。
+ *
+ * <ul>
+ *     <li>HTTP Basic authentication 将用户的登录用户名／密码经过Base64编码之后，放在请求头的Authorization字段中，从而完成用户身份的认证</li>
+ *     <li>HTTP Digest authentication 摘要认证</li>
+ * </ul>
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {

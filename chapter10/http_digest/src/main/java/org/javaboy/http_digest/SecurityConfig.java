@@ -15,13 +15,7 @@ import org.springframework.security.web.authentication.www.DigestAuthenticationE
 import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * HTTP Digest authentication HTTP 摘要认证
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -36,9 +30,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilter(digestAuthenticationFilter());
     }
+
+    /**
+     * 摘要式身份验证入口点
+     * <br>
+     * 当用户发起一个没有认证的请求时，由该实例进行处理
+     */
     DigestAuthenticationEntryPoint digestAuthenticationEntryPoint() {
         DigestAuthenticationEntryPoint entryPoint = new DigestAuthenticationEntryPoint();
+        // nonce：服务端生成的一个随机字符串，在客户端生成摘要信息时会用到该随机字符串
         entryPoint.setNonceValiditySeconds(3600);
+        // Realm：服务端返回的标识访问资源的安全域
         entryPoint.setRealmName("myrealm");
         entryPoint.setKey("javaboy");
         return entryPoint;
@@ -47,6 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         DigestAuthenticationFilter filter = new DigestAuthenticationFilter();
         filter.setAuthenticationEntryPoint(digestAuthenticationEntryPoint());
         filter.setUserDetailsService(userDetailsServiceBean());
+        // 进行密码加密：将username + ":" + realm + ":" +password使用MD5算法计算其消息摘要，将计算结果作为用户密码
+        // --> e7ecfd3f08e6960f154e1ff29079fbd3
         filter.setPasswordAlreadyEncoded(true);
         return filter;
     }
@@ -54,6 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public UserDetailsService userDetailsServiceBean() throws Exception {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+        // 用户名是javaboy，realm是myrealm，用户密码是123，计算的消息摘要 见 HttpDigestApplicationTests
         manager.createUser(User.withUsername("javaboy").password("e7ecfd3f08e6960f154e1ff29079fbd3").roles("admin").build());
         return manager;
     }
