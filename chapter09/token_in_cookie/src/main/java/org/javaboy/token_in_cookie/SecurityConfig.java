@@ -8,13 +8,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.LazyCsrfTokenRepository;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * Ajax CSRF 将CSRF令牌放在响应头Cookie中，开发者自行从Cookie中提取出CSRF令牌信息，然后再作为参数提交到服务端。
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
