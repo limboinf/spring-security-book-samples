@@ -16,28 +16,24 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * HttpFirewall
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-//    @Bean
-//    HttpFirewall httpFirewall() {
-//        StrictHttpFirewall strictHttpFirewall = new StrictHttpFirewall();
-//        strictHttpFirewall.setAllowedHostnames((hostname) -> hostname.equalsIgnoreCase("local.javaboy.org"));
-//        return strictHttpFirewall;
-//    }
-
     @Bean
     HttpFirewall httpFirewall() {
-        return new DefaultHttpFirewall();
+        // StrictHttpFirewall 严格防火墙模式（默认）
+        StrictHttpFirewall strictHttpFirewall = new StrictHttpFirewall();
+        strictHttpFirewall.setAllowedHostnames((hostname) -> hostname.equalsIgnoreCase("local.javaboy.org"));
+        return strictHttpFirewall;
     }
+
+//    @Bean
+//    HttpFirewall httpFirewall() {
+//        // DefaultHttpFirewall: 宽松防火墙模式
+//        return new DefaultHttpFirewall();
+//    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

@@ -8,22 +8,33 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * 集群 session 方案(不适用与无状态登录)
+ * <br>
+ * <ul>
+ *     <li>Session粘滞（会话保持）通过nginx 一致性hash，将hash结果相同的请求落到相同服务器上</li>
+ *     <li>Session共享：如Redis存储session做共享 (利用spring-session可以方便地实现Session的管理)</li>
+ * </ul>
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    /**
+     * 会话存储和加载的Repository, 实现类有 RedisIndexedSessionRepository
+     */
     @Autowired
     FindByIndexNameSessionRepository sessionRepository;
+
+    /**
+     * 会话注册表
+     */
+    @Bean
+    SpringSessionBackedSessionRegistry sessionRegistry() {
+        return new SpringSessionBackedSessionRegistry(sessionRepository);
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -46,8 +57,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .maximumSessions(1)
                 .sessionRegistry(sessionRegistry());
     }
-    @Bean
-    SpringSessionBackedSessionRegistry sessionRegistry() {
-        return new SpringSessionBackedSessionRegistry(sessionRepository);
-    }
+
 }

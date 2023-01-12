@@ -32,32 +32,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .and()
-                .csrf().disable()
-                .sessionManagement()    // 开启会话配置
-                .maximumSessions(1)
-//                .maxSessionsPreventsLogin(true) // 默认是被挤下线，还有一种是禁止后来者登录，即一旦当前用户登录成功，后来者无法再次使用相同的用户登录(设置true）
-//                .expiredUrl("/login")  // 自定义会话销毁后行为，如登陆
-                // 对于前后端分离的项目则自定义会话销毁后行为提示
-                .expiredSessionStrategy(event -> {
-                    HttpServletResponse response = event.getResponse();
-                    response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
-                    Map<String, Object> res = new HashMap<>();
-                    res.put("status", 500);
-                    res.put("msg", "当前会话已失效，请重新登录");
-                    String s = new ObjectMapper().writeValueAsString(res);
-                    response.getWriter().print(s);
-                    response.flushBuffer();
-                })
-        ;    // 设置会话并发数为1（也就是用户只能在一个设备登录）
-    }
-
 //    @Override
 //    protected void configure(HttpSecurity http) throws Exception {
 //        http.authorizeRequests()
@@ -65,23 +39,50 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .and()
 //                .formLogin()
 //                .and()
-//                .csrf()
-//                .disable()
-//                .sessionManagement()
-//                .sessionFixation()
-//                .none()
+//                .csrf().disable()
+//                .sessionManagement()    // 开启会话配置
 //                .maximumSessions(1)
+////                .maxSessionsPreventsLogin(true) // 默认是被挤下线，还有一种是禁止后来者登录，即一旦当前用户登录成功，后来者无法再次使用相同的用户登录(设置true）
+////                .expiredUrl("/login")  // 自定义会话销毁后行为，如登陆
+//                // 对于前后端分离的项目则自定义会话销毁后行为提示
 //                .expiredSessionStrategy(event -> {
 //                    HttpServletResponse response = event.getResponse();
-//                    response.setContentType("application/json;charset=utf-8");
-//                    Map<String, Object> result = new HashMap<>();
-//                    result.put("status", 500);
-//                    result.put("msg", "当前会话已经失效，请重新登录");
-//                    String s = new ObjectMapper().writeValueAsString(result);
+//                    response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+//                    Map<String, Object> res = new HashMap<>();
+//                    res.put("status", 500);
+//                    res.put("msg", "当前会话已失效，请重新登录");
+//                    String s = new ObjectMapper().writeValueAsString(res);
 //                    response.getWriter().print(s);
 //                    response.flushBuffer();
-//                });
+//                })
+//        ;    // 设置会话并发数为1（也就是用户只能在一个设备登录）
 //    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .and()
+                .csrf()
+                .disable()
+                .sessionManagement()
+                .sessionFixation()  // 开启会话固定攻击防御配置
+//                .none()
+                .changeSessionId()  // 防御配置, 默认方案
+                .maximumSessions(1)
+                .expiredSessionStrategy(event -> {
+                    HttpServletResponse response = event.getResponse();
+                    response.setContentType("application/json;charset=utf-8");
+                    Map<String, Object> result = new HashMap<>();
+                    result.put("status", 500);
+                    result.put("msg", "当前会话已经失效，请重新登录");
+                    String s = new ObjectMapper().writeValueAsString(result);
+                    response.getWriter().print(s);
+                    response.flushBuffer();
+                });
+    }
 
     /**
      * http会话事件发布者
