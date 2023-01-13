@@ -1,19 +1,21 @@
 package org.javaboy.based_on_method;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * 基于方法的权限管理
+ * @EnableGlobalMethodSecurity 开启权限注解
+ * 具体case 见 BasedOnMethodApplicationTests
  */
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+@EnableGlobalMethodSecurity(
+        // 开启Spring Security提供的四个权限注解，@PostAuthorize、@PostFilter、@PreAuthorize以及@PreFilter，这四个注解支持权限表达式
+        prePostEnabled = true,
+        // 开启Spring Security提供的@Secured注解，不支持权限表达式
+        securedEnabled = true,
+        // 开启JSR-250提供的注解，@DenyAll, @PermitAll, @RolesAllowed 注解，不支持权限表达式
+        jsr250Enabled = true
+)
 public class SecurityConfig extends GlobalMethodSecurityConfiguration {
 
 }

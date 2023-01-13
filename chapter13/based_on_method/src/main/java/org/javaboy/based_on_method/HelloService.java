@@ -14,36 +14,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * 基于方法的权限管理
  */
 @Service
 public class HelloService {
-    @PreAuthorize("hasRole('ADMIN') and authentication.name=='javaboy'")
+
+    // 在目标方法执行之前进行权限验证
+    @PreAuthorize("hasRole('ADMIN') and authentication.name == 'javaboy'")
     public String hello() {
         return "hello";
     }
 
-    @PreAuthorize("authentication.name==#name")
+    @PreAuthorize("authentication.name == #name")
     public String hello(String name) {
         return "hello:" + name;
     }
 
-    @PreFilter(value = "filterObject.id%2!=0",filterTarget = "users")
+    // 在目标方法执行之前对方法入参进行过滤
+    @PreFilter(value = "filterObject.id % 2 != 0", filterTarget = "users")
     public void addUsers(List<User> users, Integer other) {
         System.out.println("users = " + users);
     }
 
-    @PostAuthorize("returnObject.id==1")
+    // 在目标方法执行之后进行权限验证
+    @PostAuthorize("returnObject.id == 1")
     public User getUserById(Integer id) {
         return new User(id, "javaboy");
     }
 
+    // 在目标方法执行后对结果进行过滤
     @PostFilter("filterObject.id%2==0")
     public List<User> getAll() {
         List<User> users = new ArrayList<>();
@@ -53,27 +52,30 @@ public class HelloService {
         return users;
     }
 
+    // 访问目标方法必须具备相应角色
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     public User getUserByUsername(String username) {
         return new User(99, username);
     }
-
 
     @Secured({"READ_USER"})
     public User getUserByUsername2(String username) {
         return new User(99, username);
     }
 
+    // 允许所有访问
     @PermitAll
     public String permitAll() {
         return "PermitAll";
     }
 
+    // 禁止所有访问
     @DenyAll
     public String denyAll() {
         return "DenyAll";
     }
 
+    // 访问目标方法必须具备相应角色
     @RolesAllowed({"ADMIN","USER"})
     public String rolesAllowed() {
         return "RolesAllowed";
