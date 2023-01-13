@@ -26,6 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class AclApplicationTests {
 
     @Autowired
+    JdbcMutableAclService jdbcMutableAclService;
+
+    @Autowired
     NoticeMessageService noticeMessageService;
     @Test
     @WithMockUser(username = "manager")
@@ -39,6 +42,7 @@ class AclApplicationTests {
     @Test
     @WithMockUser(username = "hr")
     public void test05() {
+        // 基于test04 hr 有该NoticeMessage(1)的写权限，则可写
         NoticeMessage msg = noticeMessageService.findById(1);
         assertNotNull(msg);
         assertEquals(1, msg.getId());
@@ -49,12 +53,10 @@ class AclApplicationTests {
         assertEquals("javaboy-1111", msg.getContent());
     }
 
-    @Autowired
-    JdbcMutableAclService jdbcMutableAclService;
     @Test
     @WithMockUser(username = "javaboy")
     @Transactional
-    @Rollback(value = false)
+    @Rollback(value = false)    // 测试方便就不自动回滚了
     public void test06() {
         ObjectIdentity objectIdentity = new ObjectIdentityImpl(NoticeMessage.class, 99);
         Permission p = BasePermission.CREATE;
@@ -66,8 +68,9 @@ class AclApplicationTests {
     @Test
     @WithMockUser(username = "javaboy")
     @Transactional
-    @Rollback(value = false)
+    @Rollback(value = false)    // 测试方便就不自动回滚了
     public void test04() {
+        // 授予hr 对ObjectIdentity = 1(也就是NoticeMessage id = 1)有写的权限
         ObjectIdentity objectIdentity = new ObjectIdentityImpl(NoticeMessage.class, 1);
         Permission p = BasePermission.WRITE;
         MutableAcl acl = (MutableAcl) jdbcMutableAclService.readAclById(objectIdentity);
@@ -78,10 +81,12 @@ class AclApplicationTests {
     @Test
     @WithMockUser(username = "hr")
     public void test03() {
+        // 由于test02 已经给hr用户对于NoticeMessage id = 1授权了READ，则该用户可读取这一条记录
         List<NoticeMessage> all = noticeMessageService.findAll();
         assertNotNull(all);
         assertEquals(1, all.size());
         assertEquals(1, all.get(0).getId());
+
         NoticeMessage byId = noticeMessageService.findById(1);
         assertNotNull(byId);
         assertEquals(1, byId.getId());
@@ -91,11 +96,15 @@ class AclApplicationTests {
     @Test
     @WithMockUser(username = "javaboy")
     @Transactional
-    @Rollback(value = false)
+    @Rollback
     public void test02() {
+        // mock user是javaboy，也就是这个Acl对象创建好之后，它的owner是javaboy
+        // 会自动向acl_sid表中添加一条记录，值为javaboy
+        // 在方法执行过程中，会分别向acl_entry、acl_object_identity以及acl_sid三张表中添加记录，因此需要添加事务
         ObjectIdentity objectIdentity = new ObjectIdentityImpl(NoticeMessage.class, 1);
         Permission p = BasePermission.READ;
         MutableAcl acl = jdbcMutableAclService.createAcl(objectIdentity);
+        // javaboy创建了一个权限：hr用户 有 ObjectIdentity = 1 的读权限
         acl.insertAce(acl.getEntries().size(), p, new PrincipalSid("hr"), true);
         jdbcMutableAclService.updateAcl(acl);
     }
@@ -104,7 +113,7 @@ class AclApplicationTests {
     @WithMockUser(username = "manager")
     public void test01() {
         List<NoticeMessage> all = noticeMessageService.findAll();
-        assertEquals(0,all.size());
+        assertEquals(0, all.size());
     }
 
 

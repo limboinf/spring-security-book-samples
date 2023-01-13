@@ -20,13 +20,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import javax.sql.DataSource;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * ACL配置类
  */
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
@@ -37,16 +31,22 @@ public class AclConfig {
 
     @Bean
     public AclAuthorizationStrategy aclAuthorizationStrategy() {
+        // 指定一个角色能修改认证主体的权限(3种权限：修改ACL的owner、修改ACL的审计信息、修改ACE本身)
         return new AclAuthorizationStrategyImpl(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {
+        // PermissionGrantingStrategy的isGranted方法是真正的权限对比方法
+        // 指定权限对比时审计日志ConsoleAuditLogger 仅控制台打印
         return new DefaultPermissionGrantingStrategy(new ConsoleAuditLogger());
     }
 
+    // ~ Acl Cache
+    // ===================================================================================================
     @Bean
     public AclCache aclCache() {
+        // 引入了Ehcache做缓存，避免数据库压力
         return new EhCacheBasedAclCache(aclEhCacheFactoryBean().getObject(), permissionGrantingStrategy(), aclAuthorizationStrategy());
     }
 
@@ -63,20 +63,28 @@ public class AclConfig {
         return new EhCacheManagerFactoryBean();
     }
 
+    // ===================================================================================================
+
     @Bean
     public LookupStrategy lookupStrategy() {
-        return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger()
-        );
+        // LookupStrategy可以通过ObjectIdentity解析出对应的ACL
+        return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
     }
 
     @Bean
-    public AclService aclService() {
-        return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
+    public JdbcMutableAclService aclService() {
+        // AclService接口中主要定义了一些解析Acl对象的方法
+        JdbcMutableAclService jdbcMutableAclService = new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
+        // for MySQL ONLY, 解决 PROCEDURE acls.identity does not exist 问题
+        // https://stackoverflow.com/questions/54859029/spring-security-acl-object
+        jdbcMutableAclService.setClassIdentityQuery("SELECT @@IDENTITY");
+        jdbcMutableAclService.setSidIdentityQuery("SELECT @@IDENTITY");
+        return jdbcMutableAclService;
     }
 
     @Bean
     PermissionEvaluator permissionEvaluator() {
-        AclPermissionEvaluator permissionEvaluator = new AclPermissionEvaluator(aclService());
-        return permissionEvaluator;
+        // PermissionEvaluator是为表达式hasPermission提供支持的
+        return new AclPermissionEvaluator(aclService());
     }
 }
