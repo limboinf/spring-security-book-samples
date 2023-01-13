@@ -18,13 +18,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * SecurityMetadataSource接口负责提供受保护对象所需要的权限。
+ * 在本案例中，受保护对象所需要的权限保存在数据库中，
+ * 所以我们可以通过自定义类继承自FilterInvocationSecurityMetadataSource，并重写getAttributes方法来提供受保护对象所需要的权限
  */
 @Component
 public class CustomSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
@@ -32,16 +28,27 @@ public class CustomSecurityMetadataSource implements FilterInvocationSecurityMet
     MenuService menuService;
     AntPathMatcher antPathMatcher = new AntPathMatcher();
 
+    /**
+     * 得到受保护对象所需要的权限
+     *
+     * @param object 所保护的对象, 基于URL地址的权限控制中，受保护对象就是FilterInvocation
+     */
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
+
+        // 从受保护的对象FilterInvocation 中获取当前请求URL地址
         String requestURI = ((FilterInvocation) object).getRequest().getRequestURI();
+
+        // 从数据库中查询所有菜单数据（每条包含访问所需权限）
         List<Menu> allMenu = menuService.getAllMenu();
         for (Menu menu : allMenu) {
             if (antPathMatcher.match(menu.getPattern(), requestURI)) {
-                String[] roles = menu.getRoles().stream().map(r -> r.getName()).toArray(String[]::new);
+                String[] roles = menu.getRoles().stream().map(Role::getName).toArray(String[]::new);
                 return SecurityConfig.createList(roles);
             }
         }
+
+        // 返回null时，允许访问受保护对象
         return null;
     }
 

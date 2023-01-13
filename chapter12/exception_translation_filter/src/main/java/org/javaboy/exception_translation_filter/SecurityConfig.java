@@ -14,13 +14,19 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * Spring Security 异常处理
+ * <br>
+ * 主要两方面： AuthenticationException 认证异常处理、AccessDeniedException 权限异常处理
+ * 在ExceptionTranslationFilter过滤器中分别对AuthenticationException和AccessDeniedException类型的异常进行处理，
+ * 如果异常不是这两种类型的，则将异常抛出交给上层容器处理。
+ *
+ * AuthenticationException和AccessDeniedException两种不同类型的异常，分别对应了AuthenticationEntryPoint和AccessDeniedHandler两种不同的异常处理器。
+ * 如果系统提供的异常处理器不能满足需求，开发者也可以自定义异常处理器，并且可以为不同的请求指定不同的异常处理器
+ *
+ * <ul>
+ *     <li>defaultAuthenticationEntryPointFor 配置自定义认证异常</li>
+ *     <li>defaultAccessDeniedHandlerFor 配置自定义权限异常</li>
+ * </ul>
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -28,11 +34,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         AntPathRequestMatcher matcher1 = new AntPathRequestMatcher("/qq/**");
         AntPathRequestMatcher matcher2 = new AntPathRequestMatcher("/wx/**");
+
         http.authorizeRequests()
                 .antMatchers("/wx/**").hasRole("wx")
                 .antMatchers("/qq/**").hasRole("qq")
                 .anyRequest().authenticated()
                 .and()
+                // exceptionHandling() 调用ExceptionHandlingConfigurer配置 ExceptionTranslationFilter
                 .exceptionHandling()
                 .defaultAuthenticationEntryPointFor((req, resp, e) -> {
                     resp.setContentType("text/html;charset=utf-8");

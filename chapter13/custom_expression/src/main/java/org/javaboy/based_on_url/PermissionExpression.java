@@ -6,13 +6,9 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * 自定义权限验证表达式
+ * <br>
+ * 假设 userId 是偶数，username是 javaboy 才通过验证
  */
 @Component
 public class PermissionExpression {

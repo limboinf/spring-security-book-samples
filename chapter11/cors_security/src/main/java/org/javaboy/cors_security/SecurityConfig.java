@@ -15,13 +15,8 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ * Spring Security CROS 方案
+ * <br/>
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -32,8 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .httpBasic()
                 .and()
-                .cors()
-                .configurationSource(corsConfigurationSource())
+                .cors() // 开启跨域
+                .configurationSource(corsConfigurationSource()) // 填充跨域配置实例
                 .and()
                 .csrf().disable();
     }
