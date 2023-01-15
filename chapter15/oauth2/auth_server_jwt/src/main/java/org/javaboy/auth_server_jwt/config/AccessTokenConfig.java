@@ -21,13 +21,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author 江南一点雨
- * @微信公众号 江南一点雨
- * @网站 http://www.itboyhub.com
- * @国际站 http://www.javaboy.org
- * @微信 a_java_boy
- * @GitHub https://github.com/lenve
- * @Gitee https://gitee.com/lenve
+ 非对称加密有两种使用场景：
+ · 加密场景：公钥负责加密，私钥负责解密。
+ · 签名场景：私钥负责签名，公钥负责验证。
+
+ 在JWT中使用的非对称加密属于签名场景
  */
 @Configuration
 public class AccessTokenConfig {
@@ -37,14 +35,26 @@ public class AccessTokenConfig {
         return new JwtTokenStore(jwtAccessTokenConverter());
     }
 
+    /**
+     * jwt访问令牌转换器
+     * 配置一下签名以及验证者即可
+     */
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
+
+        // 签名（私钥）
         RsaSigner signer = new RsaSigner(KeyConfig.getSignerKey());
+
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setSigner(signer);
+        // 验证（公钥）
         converter.setVerifier(new RsaVerifier(KeyConfig.getVerifierKey()));
         return converter;
     }
+
+    /**
+     * 提供一个包含公钥的JWKSet对象，该对象接下来要暴露给资源服务器。
+     */
     @Bean
     public JWKSet jwkSet() {
         RSAKey.Builder builder = new RSAKey.Builder(KeyConfig.getVerifierKey())

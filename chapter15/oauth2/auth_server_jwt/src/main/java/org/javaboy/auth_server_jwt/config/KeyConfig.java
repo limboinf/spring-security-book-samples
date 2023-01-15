@@ -24,6 +24,10 @@ import java.security.KeyPair;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
+/**
+ * KEY_STORE_FILE就是生成的证书文件名，KEY_STORE_PASSWORD则是生成证书时输入的密码，KEY_ALIAS指证书别名
+ * getVerifierKey和getSignerKey两个方法分别返回公钥和私钥。
+ */
 class KeyConfig {
 	private static final String KEY_STORE_FILE = "jwt.jks";
 	private static final String KEY_STORE_PASSWORD = "123456";
